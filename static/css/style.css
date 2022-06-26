@@ -1,0 +1,41 @@
+body.body {
+    padding-top: 20px;
+}
+body.body ul li {
+    border-left: 0px;
+    border-radius: 0 !important;
+    border-right: 0px;
+}
+body.body ul li span.rule {
+    float: right;
+    margin-top: 4px;
+}
+body.body ul li span.result span.operator {
+    color: red;
+    font-weight: 100;
+}
+body.body ul li span.result span.variable {
+    color: blue;
+    font-weight: bold;
+}
+body.body ul li span.result span.bracket {
+    color: purple;
+}
+body.body > .container > h1 {
+    border: 2px #eee solid;
+    color: brown;
+    text-align: center;
+    padding: 10px;
+}
+body.body h6 quote {
+    color: blue;
+    font-weight: bold;
+    float: right;
+}
+
+body.body table {
+    width: 100%;
+}
+table, th, td {
+    border: 1px solid black;
+}

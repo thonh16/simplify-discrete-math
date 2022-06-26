@@ -1,0 +1,13 @@
+**/bin
+**/lib
+**/include
+**/__pycache__
+**/share
+**/.DS_store
+**/.vscode
+pip-selfcheck.json
+pyvenv.cfg
+hasse.*
+**/dist
+**/build
+app.spec
