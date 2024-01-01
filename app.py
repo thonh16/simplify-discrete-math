@@ -72,4 +72,4 @@ if __name__ == "__main__":
                 return render_template('index.html', error="Invalid expression") 
         
         return render_template('index.html')
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
