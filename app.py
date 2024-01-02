@@ -7,7 +7,7 @@ from flask import Flask, render_template, request
 from sympy import And, Implies, Nor, Not, Or, Symbol, init_printing
 from sympy.printing.mathml import mathml, print_mathml
 
-from logic.logic_simplify import logic_simplify_expr_string
+from logic.expression.logic_simplify import logic_simplify_expr_string
 
 if __name__ == "__main__":
     app = Flask(__name__)
@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
 
     @app.route('/')
-    def index():
+    def indexExpression():
         args = request.args
         if "expression" in args:
             expression = args.get("expression")
@@ -66,10 +66,33 @@ if __name__ == "__main__":
                 for i, _ in enumerate(rules):
                     print (results[i])
                     steps.append([replace(results[i]), rules[i]])
-                return render_template('index.html', steps=steps, expression=expression, _expression=replace(expression))
+                return render_template('expression/index.html', steps=steps, expression=expression, _expression=replace(expression))
             except Exception as ex:
                 traceback(ex)
-                return render_template('index.html', error="Invalid expression") 
+                return render_template('expression/index.html', error="Invalid expression") 
         
-        return render_template('index.html')
-    app.run(debug=True, host="0.0.0.0")
+        return render_template('expression/index.html')
+    
+
+    @app.route('/graph')
+    def indexGraph():
+        args = request.args
+        if "expression" in args:
+            expression = args.get("expression")
+            # expr_str_1 = '((p => q) & p) => q'
+            # expr_str_1 = '(p | q) & ~(~p & q)'
+            try:
+                pprint(expression)
+                _, rules, results = logic_simplify_expr_string(expression)
+                steps = []
+                for i, _ in enumerate(rules):
+                    print (results[i])
+                    steps.append([replace(results[i]), rules[i]])
+                return render_template('graph/index.html', steps=steps, expression=expression, _expression=replace(expression))
+            except Exception as ex:
+                traceback(ex)
+                return render_template('graph/index.html', error="Invalid expression") 
+        
+        return render_template('graph/index.html')
+    
+    app.run(debug=True, host="0.0.0.0", port=9999)

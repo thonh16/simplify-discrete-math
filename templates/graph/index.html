@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>Document</title>
+</head>
+
+<body class="body">
+    <div class="container">
+    <h1>ĐỒ THỊ QUAN HỆ - LỚP BAO ĐÓNG</h1>
+        <br>
+        {% if error %}
+        <div class="row">
+            <div class="alert alert-danger col-lg-12" role="alert">
+                {{ error }}
+            </div>
+        </div>
+        {% endif %}
+        <hr>
+        <div class="row">
+            <div class="col-lg-6">
+                <h3>Nhập đề bài:</h3>
+                <hr>
+                <form action="./" method="get">
+                    <div class="input-group mb-3">
+                        {% if expression %}
+                        <input type="text" class="form-control" value="{{ expression }}" placeholder="Nhập biểu thức"
+                            aria-label="Nhập biểu thức" aria-describedby="button-addon" name="expression">
+                        {% else %}
+                        <input type="text" class="form-control" placeholder="Nhập biểu thức" aria-label="Nhập biểu thức"
+                            aria-describedby="button-addon" name="expression">
+                        {% endif %}
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit" id="button-addon2">Xem kết quả</button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h6>Ứng dụng hỗ trợ các ký hiệu sau để nhập một biểu thức logic</h6>
+                            <br>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th style="text-align: center;">Ký hiệu</th>
+                                        <th style="text-align: center;">Ký hiệu thay thế</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Phép phủ định</td>
+                                        <td style="text-align: center;"><b>¬</b></td>
+                                        <td style="text-align: center;"><b>~</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Phép hội</td>
+                                        <td style="text-align: center;"><b>∧</b></td>
+                                        <td style="text-align: center;"><b>&</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Phép tuyển</td>
+                                        <td style="text-align: center;"><b>v</b></td>
+                                        <td style="text-align: center;"><b>|</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Phép kéo theo</td>
+                                        <td style="text-align: center;"><b>→</b></td>
+                                        <td style="text-align: center;"><b>=></b></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br>
+                            <h6>Ví dụ biểu thức: <quote>((q → r) ^ (q v ¬p)) → (p → r)</quote>
+                            </h6>
+                            <h6>Nhập: <quote>((q => r) & (q | ~p)) => (p => r)</quote>
+                            </h6>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% if steps %}
+            <div class="col-lg-6">
+                <h3>Các bước giải:</h3>
+                <hr>
+                <ul class="list-group col-lg-12">
+                    <li class="list-group-item">
+                        <span class="result">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {{ _expression | safe }}</span>
+                    </li>
+                    {% for step in steps %}
+                    <li class="list-group-item">
+                        <span class="result">&#8660; &nbsp;&nbsp;&nbsp;&nbsp; {{ step[0] | safe }}</span>
+                        <span class="rule badge badge-primary">{{ step[1] }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>
