@@ -3,14 +3,19 @@ import traceback
 from functools import reduce
 from pprint import pprint
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from sympy import And, Implies, Nor, Not, Or, Symbol, init_printing
 from sympy.printing.mathml import mathml, print_mathml
 
 from logic.expression.logic_simplify import logic_simplify_expr_string
+from logic.graph.rule import create_digraph, visualize_graph
+from collections import OrderedDict
+import networkx as nx
+
 
 if __name__ == "__main__":
     app = Flask(__name__)
+    app.secret_key = 'u0dyD1wR1BLcYWa'
 
     fns = [
         lambda text: re.sub(r'\=\>', '→', text),
@@ -74,25 +79,35 @@ if __name__ == "__main__":
         return render_template('expression/index.html')
     
 
-    @app.route('/graph')
-    def indexGraph():
-        args = request.args
-        if "expression" in args:
-            expression = args.get("expression")
-            # expr_str_1 = '((p => q) & p) => q'
-            # expr_str_1 = '(p | q) & ~(~p & q)'
+    @app.route('/graph', methods=['GET', 'POST'])
+    def graph_input():
+        edges = []  # Initialize empty list to store edges
+        vertexes = []
+
+        if request.method == 'GET':
+            return render_template('graph/index.html', edges=edges)
+        else:
             try:
-                pprint(expression)
-                _, rules, results = logic_simplify_expr_string(expression)
-                steps = []
-                for i, _ in enumerate(rules):
-                    print (results[i])
-                    steps.append([replace(results[i]), rules[i]])
-                return render_template('graph/index.html', steps=steps, expression=expression, _expression=replace(expression))
+                args = request.form
+                list_vertex_name = args.get("list_vertex_name")
+                list_edge_name = args.get("list_edge_name")
+                if list_vertex_name == "" or list_edge_name == "":
+                    return render_template('graph/index.html', error="Invalid Input")
+                else:
+                    list_vertex_name = list_vertex_name.split(" ")
+                    for vertex in list_vertex_name:
+                        vertexes.append(vertex)
+
+
+                    list_edge_name = list_edge_name.split(" ")
+                    for edge in list_edge_name:
+                        edges.append(edge)
+                    num_edges = len(list_edge_name)
+                    image_path = create_digraph(num_edges, list_edge_name)
+                    print(image_path)
+                return render_template('graph/index.html', edges=edges, button_text='Giải bài toán', vertexes=vertexes, pos="Image")           
             except Exception as ex:
                 traceback(ex)
-                return render_template('graph/index.html', error="Invalid expression") 
-        
-        return render_template('graph/index.html')
+                return render_template('graph/index.html', error="Invalid Input") 
     
     app.run(debug=True, host="0.0.0.0", port=9999)
