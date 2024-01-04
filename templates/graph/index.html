@@ -18,7 +18,7 @@
                 <input type="text" class="form-control" name="list_edge_name" placeholder="Nhập vào tập quan hệ R">
                 <br>
                 <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit" id="button-addon2">Vẽ lược đồ Hasse</button>
+                    <button class="btn btn-primary" type="submit" id="button-addon2">Vẽ lược đồ Hasse và kiểm tra các tính chất</button>
                 </div>
             </form>
         </div>
@@ -40,14 +40,24 @@
         {% endif %}
 
         {% if pos %}
-        <h2>Lược đồ Hasse</h2>
-        <img src="/static/images/origin_image.png" alt="Graph Visualization">
-        {% endif %}
+            <h2>Lược đồ Hasse</h2>
+            <img src="/static/images/origin_image.png" alt="Graph Visualization">
 
-        {% if button_text %}
-        <div class="input-group-append">
-            <button class="btn btn-primary" type="submit" id="button-addon2">Kiểm tra các tính chất</button>
-        </div>
+            <h2>Các tính chất:</h2>
+            <ul>
+                <li>Tính phản xạ: {{ tinh_phan_xa }}</li>
+                <li>Tính đối xứng: {{ tinh_doi_xung }}</li>
+                <li>Tính bắc cầu: {{ tinh_bac_cau }}</li>
+            </ul>
+
+            <h2>Bao đóng phản xạ</h2>
+            <img src="/static/images/phan_xa.png">
+
+            <h2>Bao đóng đối xứng</h2>
+            <img src="/static/images/doi_xung.png">
+
+            <h2>Bao đóng bắc cầu</h2>
+            <img src="/static/images/bac_cau.png">
         {% endif %}
     </div>
 </div>

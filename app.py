@@ -8,7 +8,7 @@ from sympy import And, Implies, Nor, Not, Or, Symbol, init_printing
 from sympy.printing.mathml import mathml, print_mathml
 
 from logic.expression.logic_simplify import logic_simplify_expr_string
-from logic.graph.rule import create_digraph, visualize_graph
+from logic.graph.rule import create_digraph, visualize_graph, is_symmetric, is_reflexive, is_transitive, find_reflexive_closure, find_symmetric_closure, find_transitive_closure
 from collections import OrderedDict
 
 
@@ -165,11 +165,24 @@ if __name__ == "__main__":
                     for edge in list_edge_name:
                         edges.append(edge)
                     num_edges = len(list_edge_name)
-                    image_path = create_digraph(num_edges, list_edge_name)
-                    print(image_path)
-                return render_template('graph/index.html', edges=edges, button_text='Giải bài toán', vertexes=vertexes, pos="Image")           
+                    graph =create_digraph(num_edges, list_edge_name)
+                    visualize_graph(graph, 'static/images/origin_image.png')
+                    tinh_phan_xa = is_reflexive(graph)
+                    tinh_doi_xung = is_symmetric(graph)
+                    tinh_bac_cau = is_transitive(graph)
+
+                    print("Bao đóng phản xạ:")
+                    visualize_graph(find_reflexive_closure(graph),  'static/images/phan_xa.png')
+
+                    print("Bao đóng đối xứng:")
+                    visualize_graph(find_symmetric_closure(graph),  'static/images/doi_xung.png')
+
+                    print("Bao đóng bắc cầu:")
+                    visualize_graph(find_transitive_closure(graph),  'static/images/bac_cau.png')
+
+                return render_template('graph/index.html', edges=edges, vertexes=vertexes, pos="Image", tinh_phan_xa=tinh_phan_xa, tinh_doi_xung=tinh_doi_xung, tinh_bac_cau=tinh_bac_cau)           
             except Exception as ex:
                 traceback(ex)
                 return render_template('graph/index.html', error="Invalid Input") 
 
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0", port=9999)

@@ -14,7 +14,7 @@ def create_digraph(num_edges: int, list_edges: any):
         a = edge[0]
         b = edge[1]
         G.add_edge(a, b)
-    visualize_graph(G, 'static/images/origin_image.png')
+    return G
 
 def is_reflexive(G):
     for node in G.nodes():
