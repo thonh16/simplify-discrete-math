@@ -1,5 +1,7 @@
-# Ignore everything
-*
-
-# Allow files and directories
-!/dist/app
+bin/
+include/
+lib/
+share/
+app-selfcheck.json
+app.spec
+pyenv.cfg

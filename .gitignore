@@ -10,4 +10,5 @@ pyvenv.cfg
 hasse.*
 **/dist
 **/build
+**/static/images/
 app.spec
