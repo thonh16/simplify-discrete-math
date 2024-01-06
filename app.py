@@ -12,6 +12,78 @@ from logic.graph.rule import create_digraph, visualize_graph, is_symmetric, is_r
 from collections import OrderedDict
 
 
+fns = [
+    lambda text: re.sub(r'\s+', '', text),
+    lambda text: re.sub(r'\=\>', '→', text),
+    lambda text: re.sub(r'([^\~\s\|\&\(\)])', r'<span class="variable">\1</span>', text),
+    lambda text: re.sub(r'([\(\)])', r'<span class="bracket"> \1 </span>', text),
+    lambda text: re.sub(r'\→', '<span class="operator">→</span>', text),
+    lambda text: re.sub(r'\~', '<span class="variable">~</span>', text),
+    lambda text: re.sub(r'\|', '<span class="operator">∨</span>', text),
+    lambda text: re.sub(r'\&', '<span class="operator">∧</span>', text),
+    lambda text: re.sub(r'\+', '<span class="operator"> + </span>', text),
+    lambda text: re.sub(r'\*', '<span class="operator"> * </span>', text),
+]
+replace = lambda text: reduce(lambda a, b: b(a), fns, fn(text))
+
+def fn(text):
+    if type(text) == Implies:
+        print ("1", len(text.args), text.args)
+        return f"({fn(text.args[0])} => {fn(text.args[1])})"
+
+    if type(text) == And:
+        print ("2", len(text.args), text.args)
+        return f"({' & '.join([fn(arg) for arg in text.args])})"
+
+    if type(text) == Or:
+        print ("3", len(text.args), text.args)
+        return f"({' | '.join([fn(arg) for arg in text.args])})"
+
+    if type(text) == Nor:
+        print ("4", len(text.args), text.args)
+        return f"~({fn(text.args[0])} | {fn(text.args[1])})"
+
+    if type(text) == Not:
+        print ("5", len(text.args), text.args)
+        return f"~{fn(text.args[0])}"
+    
+    if type(text) == Symbol:
+        return f"{text}"
+
+    print (type(text))
+    return str(text)
+
+def find_duality(expr):
+    expr = expr.replace(' ', '')
+    result = ''
+
+    for char in expr:
+        if char == '0':
+            result += '1'
+        elif char == '1':
+            result += '0'
+        elif char == '+':
+            result += ') * ('
+        elif char == '*':
+            result += '+'
+        else:
+            result += char
+
+    return f"({result})"
+
+def simplify_boolean_expression(expression):
+    # Remove all spaces from the expression
+    expression = expression.replace(" ", "")
+
+    # Define a regular expression pattern to match redundant parentheses
+    pattern = re.compile(r'\((\w+)\)')
+
+    # Replace redundant parentheses with the captured content
+    simplified_expression = pattern.sub(r'\1', expression)
+
+    return simplified_expression
+
+
 if __name__ == "__main__":
     app = Flask(__name__)
     app.secret_key = 'u0dyD1wR1BLcYWa'
@@ -19,45 +91,6 @@ if __name__ == "__main__":
     @app.route('/rut-gon-bieu-thuc-logic')
     @app.route('/')
     def rut_gon_bieu_thuc_logic():
-        fns = [
-            lambda text: re.sub(r'\=\>', '→', text),
-            lambda text: re.sub(r'([^\~\s\|\&\(\)])', r'<span class="variable">\1</span>', text),
-            lambda text: re.sub(r'([\(\)])', r'<span class="bracket"> \1 </span>', text),
-            lambda text: re.sub(r'\→', '<span class="operator">→</span>', text),
-            lambda text: re.sub(r'\~', '<span class="variable">¬</span>', text),
-            lambda text: re.sub(r'\|', '<span class="operator">∨</span>', text),
-            lambda text: re.sub(r'\&', '<span class="operator">∧</span>', text),
-        ]
-        def fn(text):
-
-            if type(text) == Implies:
-                print ("1", len(text.args), text.args)
-                return f"({fn(text.args[0])} => {fn(text.args[1])})"
-
-            if type(text) == And:
-                print ("2", len(text.args), text.args)
-                return f"({' & '.join([fn(arg) for arg in text.args])})"
-
-            if type(text) == Or:
-                print ("3", len(text.args), text.args)
-                return f"({' | '.join([fn(arg) for arg in text.args])})"
-
-            if type(text) == Nor:
-                print ("4", len(text.args), text.args)
-                return f"~({fn(text.args[0])} | {fn(text.args[1])})"
-
-            if type(text) == Not:
-                print ("5", len(text.args), text.args)
-                return f"~{fn(text.args[0])}"
-            
-            if type(text) == Symbol:
-                return f"{text}"
-
-            print (type(text))
-            return str(text)
-
-        replace = lambda text: reduce(lambda a, b: b(a), fns, fn(text))
-        
         template = 'expression/rut-gon-bieu-thuc-logic.html'
         args = request.args
         if "expression" in args:
@@ -77,63 +110,61 @@ if __name__ == "__main__":
                 return render_template(template, error="Invalid expression") 
         
         return render_template(template)
-    
 
     @app.route('/tim-gia-tri-bieu-thuc')
     def tim_gia_tri_bieu_thuc():
-        fns = [
-            lambda text: re.sub(r'\=\>', '→', text),
-            lambda text: re.sub(r'([^\~\s\|\&\(\)])', r'<span class="variable">\1</span>', text),
-            lambda text: re.sub(r'([\(\)])', r'<span class="bracket"> \1 </span>', text),
-            lambda text: re.sub(r'\→', '<span class="operator">→</span>', text),
-            lambda text: re.sub(r'\~', '<span class="variable">¬</span>', text),
-            lambda text: re.sub(r'\|', '<span class="operator">∨</span>', text),
-            lambda text: re.sub(r'\&', '<span class="operator">∧</span>', text),
-        ]
-        def fn(text):
-
-            if type(text) == Implies:
-                print ("1", len(text.args), text.args)
-                return f"({fn(text.args[0])} => {fn(text.args[1])})"
-
-            if type(text) == And:
-                print ("2", len(text.args), text.args)
-                return f"({' & '.join([fn(arg) for arg in text.args])})"
-
-            if type(text) == Or:
-                print ("3", len(text.args), text.args)
-                return f"({' | '.join([fn(arg) for arg in text.args])})"
-
-            if type(text) == Nor:
-                print ("4", len(text.args), text.args)
-                return f"~({fn(text.args[0])} | {fn(text.args[1])})"
-
-            if type(text) == Not:
-                print ("5", len(text.args), text.args)
-                return f"~{fn(text.args[0])}"
-            
-            if type(text) == Symbol:
-                return f"{text}"
-
-            print (type(text))
-            return str(text)
-
-        replace = lambda text: reduce(lambda a, b: b(a), fns, fn(text))
-        
         template = 'expression/tim-gia-tri-bieu-thuc.html'
         args = request.args
         if "expression" in args:
             expression = args.get("expression")
-            # expr_str_1 = '((p => q) & p) => q'
-            # expr_str_1 = '(p | q) & ~(~p & q)'
             try:
                 pprint(expression)
-                _, rules, results = logic_simplify_expr_string(expression)
+                expr = expression
                 steps = []
-                for i, _ in enumerate(rules):
-                    print (results[i])
-                    steps.append([replace(results[i]), rules[i]])
-                return render_template(template, steps=steps, expression=expression, _expression=replace(expression))
+                steps.append([expr, ''])
+
+                i = 0
+                while len(expr) > 1 and i < 100:
+                    expr = re.sub('~0', '1', expr)
+                    expr = re.sub('~1', '0', expr)
+                    for e in re.findall(r'(\([^\(\)]+\))', expr):
+                        expr = expr.replace(e, str(1 if eval(e) > 0 else 0))
+
+                    if steps[-1][0] != expr:
+                        steps.append([expr, ''])
+
+                    if re.match(r'^[0|1|\+|*|\s]+$', expr):
+                        expr = str(1 if eval(expr) > 0 else 0)
+                        steps.append([expr, ''])
+
+                    i += 1
+                
+                if steps[-1][0] != expr:
+                    steps.append([str(1 if eval(expr) > 0 else 0), ''])
+
+                print (steps)
+                return render_template(template, steps=[[replace(s[0]), s[1]] for s in steps], expression=expression)
+            except Exception as ex:
+                traceback(ex)
+                return render_template(template, error="Invalid expression") 
+        
+        return render_template(template)
+
+    @app.route('/tim-doi-ngau-bieu-thuc')
+    def tim_doi_ngau_bieu_thuc():
+        template = 'expression/tim-doi-ngau-bieu-thuc.html'
+        args = request.args
+        if "expression" in args:
+            expression = args.get("expression")
+            try:
+                pprint(expression)
+                steps = []
+                steps.append([expression, ''])
+                dual_expression = find_duality(expression)
+                output_expression = simplify_boolean_expression(dual_expression)
+                steps.append([output_expression, ''])
+                print ("#", steps)
+                return render_template(template, steps=[[replace(s[0]), s[1]] for s in steps], expression=expression)
             except Exception as ex:
                 traceback(ex)
                 return render_template(template, error="Invalid expression") 
